@@ -1,3 +1,5 @@
+let win = false;
+
 const gameBoard = (() => {
   const grid = document.getElementById("grid");
 
@@ -25,6 +27,7 @@ const gameBoard = (() => {
     });
     gameLogic.resetMoves();
     let currentSign = "X";
+    win = false;
   };
   return { createGrid, startMove, currentSign, restartGame };
 })();
@@ -57,7 +60,7 @@ const gameLogic = (() => {
       checkDraw();
       switchSign();
       AI.makeRandomMove();
-      console.log(moves);
+      console.log(win);
     }
   };
 
@@ -93,6 +96,7 @@ const gameLogic = (() => {
       ) {
         endOverlay.classList.replace("disabled", "active");
         endText.textContent = `Player ${gameBoard.currentSign} has won!`;
+        win = true;
       }
     }
   };
@@ -114,7 +118,6 @@ const gameLogic = (() => {
     checkDraw,
     resetMoves,
     addMove,
-    win,
   };
 })();
 
@@ -160,7 +163,7 @@ const AI = (() => {
   };
 
   const makeRandomMove = () => {
-    if (checkAvailableMoves().length > 0 && !gameLogic.win) {
+    if (checkAvailableMoves().length > 0 && !win) {
       let randomChoice = makeRandomChoice(checkAvailableMoves()).toString();
       const cells = document.querySelectorAll(".cell");
 
