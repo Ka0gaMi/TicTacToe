@@ -4,10 +4,50 @@ body {
   margin: 0;
 }
 
+/* Creating start overlay */
+
+.start-overlay.active {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-overlay.disabled {
+  display: none;
+}
+
+.start {
+  width: 300px;
+  height: 200px;
+  background-color: aliceblue;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-btn {
+  outline: none;
+  font-size: 30px;
+  padding: 10px 40px 10px 40px;
+  border-radius: 20px;
+  border: none;
+  color: aliceblue;
+  background-color: black;
+  cursor: pointer;
+}
+
+/* Creating game container */
+
 .container {
   height: 100%;
   background-color: gray;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -32,10 +72,12 @@ body {
   cursor: pointer;
 }
 
-.cell.x::before,
-.cell.x::after,
-.grid.x .cell:not(.x):not(.o):hover::before,
-.grid.x .cell:not(.x):not(.o):hover::after {
+/* Creating X and O and adding shadow X and O to show the move */
+
+.cell.X::before,
+.cell.X::after,
+.grid.X .cell:not(.X):not(.O):hover::before,
+.grid.X .cell:not(.X):not(.O):hover::after {
   content: "";
   width: calc(200px * 0.9 * 0.15);
   height: calc(200px * 0.9);
@@ -43,44 +85,83 @@ body {
   position: absolute;
 }
 
-.cell.x::before,
-.grid.x .cell:not(.x):not(.o):hover::before {
+.cell.X::before,
+.grid.X .cell:not(.X):not(.O):hover::before {
   transform: rotate(45deg);
 }
 
-.cell.x::after,
-.grid.x .cell:not(.x):not(.o):hover::after {
+.cell.X::after,
+.grid.X .cell:not(.X):not(.O):hover::after {
   transform: rotate(-45deg);
 }
 
-.cell.o::before,
-.cell.o::after,
-.grid.o .cell:not(.x):not(.o):hover::before,
-.grid.o .cell:not(.x):not(.o):hover::after {
+.cell.O::before,
+.cell.O::after,
+.grid.O .cell:not(.X):not(.O):hover::before,
+.grid.O .cell:not(.X):not(.O):hover::after {
   content: "";
   position: absolute;
   border-radius: 50%;
 }
 
-.cell.o::before,
-.grid.o .cell:not(.x):not(.o):hover::before {
+.cell.O::before,
+.grid.O .cell:not(.X):not(.O):hover::before {
   width: calc(200px * 0.75);
   height: calc(200px * 0.75);
   background-color: black;
 }
 
-.cell.o::after,
-.grid.o .cell:not(.x):not(.o):hover::after {
+.cell.O::after,
+.grid.O .cell:not(.X):not(.O):hover::after {
   width: calc(200px * 0.55);
   height: calc(200px * 0.55);
   background-color: aliceblue;
 }
 
-.grid.x .cell:not(.x):not(.o):hover::before,
-.grid.x .cell:not(.x):not(.o):hover::after {
+.grid.X .cell:not(.X):not(.O):hover::before,
+.grid.X .cell:not(.X):not(.O):hover::after {
   background-color: lightslategray;
 }
 
-.grid.o .cell:not(.x):not(.o):hover::before {
+.grid.O .cell:not(.X):not(.O):hover::before {
   background-color: lightslategray;
+}
+
+/* Creating end overlay */
+
+.end-overlay.active {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.end-overlay.disabled {
+  display: none;
+}
+
+.end {
+  width: 300px;
+  height: 200px;
+  background-color: aliceblue;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.restart-btn {
+  outline: none;
+  font-size: 30px;
+  padding: 10px 40px 10px 40px;
+  border-radius: 20px;
+  border: none;
+  color: aliceblue;
+  background-color: black;
+  cursor: pointer;
 }

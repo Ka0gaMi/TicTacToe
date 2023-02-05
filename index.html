@@ -9,18 +9,19 @@
     <title>TicTacToe</title>
   </head>
   <body>
-    <div class="container">
-      <div class="grid" id="grid">
-        <div class="cell" id="1"></div>
-        <div class="cell" id="2"></div>
-        <div class="cell" id="3"></div>
-        <div class="cell" id="4"></div>
-        <div class="cell" id="5"></div>
-        <div class="cell" id="6"></div>
-        <div class="cell" id="7"></div>
-        <div class="cell" id="8"></div>
-        <div class="cell" id="9"></div>
+    <div class="start-overlay active">
+      <div class="start">
+        <button class="start-btn" id="start-btn">Start</button>
       </div>
+    </div>
+    <div class="end-overlay disabled">
+      <div class="end">
+        <h1 class="end-text">X player won!</h1>
+        <button class="restart-btn" id="restart-btn">Restart?</button>
+      </div>
+    </div>
+    <div class="container">
+      <div class="grid" id="grid"></div>
     </div>
   </body>
 </html>
