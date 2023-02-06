@@ -1,5 +1,7 @@
 let win = false;
 
+// GAME BOARD //
+
 const gameBoard = (() => {
   const grid = document.getElementById("grid");
 
@@ -32,6 +34,8 @@ const gameBoard = (() => {
   return { createGrid, startMove, currentSign, restartGame };
 })();
 
+// GAME LOGIC //
+
 const gameLogic = (() => {
   const grid = document.getElementById("grid");
   let moves = 0;
@@ -55,11 +59,11 @@ const gameLogic = (() => {
     if (!e.target.classList.contains("played")) {
       e.target.classList.add(gameBoard.currentSign);
       e.target.classList.add("played");
-      checkWin();
+      checkWin(humanPlayer);
       addMove();
       checkDraw();
       switchSign();
-      AI.makeRandomMove();
+      minimaxAI.makeBestMove();
       console.log(win);
     }
   };
@@ -71,7 +75,7 @@ const gameLogic = (() => {
       : grid.classList.replace("O", "X");
   };
 
-  const checkWin = () => {
+  const checkWin = (currentSign) => {
     const winConditions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -90,12 +94,12 @@ const gameLogic = (() => {
     for (let i = 0; i < winConditions.length; i++) {
       const [a, b, c] = winConditions[i];
       if (
-        cells[a].classList.contains(gameBoard.currentSign) &&
-        cells[b].classList.contains(gameBoard.currentSign) &&
-        cells[c].classList.contains(gameBoard.currentSign)
+        cells[a].classList.contains(currentSign) &&
+        cells[b].classList.contains(currentSign) &&
+        cells[c].classList.contains(currentSign)
       ) {
         endOverlay.classList.replace("disabled", "active");
-        endText.textContent = `Player ${gameBoard.currentSign} has won!`;
+        endText.textContent = `Player ${currentSign} has won!`;
         win = true;
       }
     }
@@ -171,7 +175,7 @@ const AI = (() => {
         if (cell.getAttribute("id") === randomChoice) {
           cell.classList.add(gameBoard.currentSign);
           cell.classList.add("played");
-          gameLogic.checkWin();
+          gameLogic.checkWin(aiPlayer);
           gameLogic.addMove();
           gameLogic.checkDraw();
           gameLogic.switchSign();
@@ -182,4 +186,140 @@ const AI = (() => {
     }
   };
   return { makeRandomMove, checkAvailableMoves };
+})();
+
+// Player factory function //
+
+const Player = function (sign) {
+  const currentSign = sign;
+  return currentSign;
+};
+
+const humanPlayer = Player("X");
+
+const aiPlayer = Player("O");
+
+// MiniMax AI //
+
+const minimaxAI = (() => {
+  const grid = document.getElementById("grid");
+
+  const isMovesLeft = () => {
+    const cells = document.querySelectorAll(".cell");
+
+    for (let i = 0; i < cells.length; i++) {
+      if (!cells[i].classList.contains("played")) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const evaluate = () => {
+    const winConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    for (let i = 0; i < winConditions.length; i++) {
+      const [a, b, c] = winConditions[i];
+      if (
+        grid.children[a].classList.contains("O") &&
+        grid.children[b].classList.contains("O") &&
+        grid.children[c].classList.contains("O")
+      ) {
+        return 10;
+      }
+      if (
+        grid.children[a].classList.contains("X") &&
+        grid.children[b].classList.contains("X") &&
+        grid.children[c].classList.contains("X")
+      ) {
+        return -10;
+      }
+    }
+    return 0;
+  };
+
+  const minimax = (depth, isMax) => {
+    const score = evaluate();
+
+    if (score === 10) {
+      return score - depth;
+    }
+    if (score === -10) {
+      return score + depth;
+    }
+    if (!isMovesLeft()) {
+      return 0;
+    }
+
+    if (isMax) {
+      let best = -Infinity;
+      const cells = document.querySelectorAll(".cell");
+
+      for (let i = 0; i < cells.length; i++) {
+        if (!cells[i].classList.contains("played")) {
+          cells[i].classList.add("O", "played");
+          best = Math.max(best, minimax(depth + 1, !isMax));
+          cells[i].classList.remove("O", "played");
+        }
+      }
+      return best;
+    } else {
+      let best = Infinity;
+      const cells = document.querySelectorAll(".cell");
+      for (let i = 0; i < cells.length; i++) {
+        if (!cells[i].classList.contains("played")) {
+          cells[i].classList.add("X", "played");
+          best = Math.min(best, minimax(depth + 1, !isMax));
+          cells[i].classList.remove("X", "played");
+        }
+      }
+      return best;
+    }
+  };
+
+  const findBestMove = () => {
+    let bestVal = -Infinity;
+    let bestMove;
+    const cells = document.querySelectorAll(".cell");
+
+    for (let i = 0; i < cells.length; i++) {
+      if (!cells[i].classList.contains("played")) {
+        cells[i].classList.add("O", "played");
+        let moveVal = minimax(0, false);
+        cells[i].classList.remove("O", "played");
+
+        if (moveVal > bestVal) {
+          bestVal = moveVal;
+          bestMove = i;
+        }
+      }
+    }
+
+    return bestMove;
+  };
+
+  const makeBestMove = () => {
+    if (isMovesLeft() && !win) {
+      const bestMove = findBestMove();
+      const cells = document.querySelectorAll(".cell");
+      cells[bestMove].classList.add("O", "played");
+      gameLogic.checkWin(aiPlayer);
+      gameLogic.addMove();
+      gameLogic.checkDraw();
+      gameLogic.switchSign();
+    } else {
+      gameLogic.switchSign();
+    }
+  };
+
+  return { makeBestMove };
 })();
